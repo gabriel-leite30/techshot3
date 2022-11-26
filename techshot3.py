@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 import pickle
 import requests
+import subprocess
+import sys
+package = 'scikit-learn'
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 from sklearn.linear_model import LinearRegression
 
 st.title('Previsão de vendas')
