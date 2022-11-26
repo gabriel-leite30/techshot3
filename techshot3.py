@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import requests
+from sklearn.linear_model import LinearRegression
 
 st.title('Previsão de vendas')
 
@@ -40,12 +41,13 @@ test_data = {
 
 test_data = pd.DataFrame(test_data)
 
-with open('model.pickle', 'wb') as out_file:
+'''with open('model.pickle', 'wb') as out_file:
     content = requests.get('https://github.com/gabriel-leite30/techshot3/raw/main/model.pickle', stream=True).content
-    out_file.write(content)
+    out_file.write(content)'''
 
-with open('model.pickle','rb') as input_file:
+with open('model.pickle', 'rb') as input_file:
     model = pickle.load(input_file)
+
 
 prediction = model.predict(test_data)
 
