@@ -1,48 +1,72 @@
 import streamlit as st
 import pandas as pd
 import pickle
-from sklearn.linear_model import LinearRegression
 
-st.title('Previsão de vendas')
 
-item_id = st.selectbox('Selecione o id do produto:', list(range(1, 21798)))
+st.title('Risco de AVC')
 
-item_category_id = st.selectbox('Selecione o id da categoria do produto:', list(range(1, 85)))
+gender = st.selectbox('Selecione o sexo:', ['Masculino', 'Feminino'])
+if gender == 'Masculino': gender = 1 
+else: gender = 0
 
-shop_id = st.selectbox('Selecione o id da loja:', list(range(1,61)))
+age = st.slider('Selecione a idade:', 0, 100)
 
-month = st.selectbox('Selecione o mês da previsão:', list(range(1, 13)))
+hypertension = st.selectbox('É hipertenso? :', ['Sim', 'Não'])
+if hypertension == 'Sim': hypertension = 1 
+else: hypertension = 0
 
-year = st.selectbox('Selecione o ano da previsão:', list(range(2015, 2017)))
+heart_disease = st.selectbox('Possui doença cardiovascular?', ['Sim', 'Não'])
+if heart_disease == 'Sim': heart_disease = 1 
+else: heart_disease = 0
 
-monday = st.selectbox('Insira a quantidade de segundas-feiras no mês:', list(range(3, 6)))
-tuesday = st.selectbox('Insira a quantidade de terças-feiras no mês:', list(range(3, 6)))
-wednesday = st.selectbox('Insira a quantidade de quartas-feiras no mês:', list(range(3, 6)))
-thursday = st.selectbox('Insira a quantidade de quintas-feiras no mês:', list(range(3, 6)))
-friday = st.selectbox('Insira a quantidade de sextas-feiras no mês:', list(range(3, 6)))
-saturday = st.selectbox('Insira a quantidade de sábados no mês:', list(range(3, 6)))
-sunday = st.selectbox('Insira a quantidade de domingos no mês:', list(range(3, 6)))
+ever_married = st.selectbox('Já foi casado?', ['Sim', 'Não'])
+if ever_married == 'Sim': ever_married = 1 
+else: ever_married = 0
+
+work_type = st.selectbox('Trabalho', ['Private', 'Self-employed', 'Govt_job', 'children', 'Never_worked'])
+
+residence_type = st.selectbox('Moradia', ['Urban', 'Rural'])
+
+avg_glucose_level = st.slider('Selecione o nível de glicose médio:', 40, 300)
+
+bmi = st.slider('Insira o BMI:', 3, 100)
+
+smoking_status = st.selectbox('Fuma', ['formerly smoked', 'never smoked', 'smokes', 'Unknown'])
+
+
+
+
 
 test_data = {
-    'item_id' : [item_id],
-    'shop_id' : [shop_id],
-    'item_category_id' : [item_category_id],
-    'month' : [month],
-    'year' : [year],
-    'Monday' : [monday],
-    'Tuesday' : [tuesday],
-    'Wednesday' : [wednesday],
-    'Thursday' : [thursday],
-    'Friday' : [friday],
-    'Saturday' : [saturday],
-    'Sunday' : [sunday]
+    'gender' : [gender],
+    'age' : [age],
+    'hypertension' : [hypertension], 
+    'heart_disease' : [heart_disease],
+    'ever_married' : [ever_married],
+    'avg_glucose_level' : [avg_glucose_level],
+    'bmi' : [bmi], 
+    'Govt_job' : [0], 
+    'Never_worked' : [0],
+    'Private' : [0], 
+    'Self-employed' : [0], 
+    'children' : [0], 
+    'Rural' : [0], 
+    'Urban' : [0], 
+    'Unknown' : [0],
+    'formerly smoked' : [0], 
+    'never smoked' : [0], 
+    'smokes' : [0]
 }
+
+test_data[work_type] = 1
+test_data[residence_type] = 1
+test_data[smoking_status] = 1
 
 test_data = pd.DataFrame(test_data)
 
 with open('model.pickle', 'rb') as input_file:
     model = pickle.load(input_file)
 
-prediction = model.predict(test_data)
+prediction = model.predict_proba(test_data)
 
-st.write(f'A previsão de vendas do produto é de: {prediction[0]}')
+st.metric(label="Probabilidade de um AVC", value=f'{round(prediction[0][1],4)*100}%')
